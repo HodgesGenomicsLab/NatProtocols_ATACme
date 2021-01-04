@@ -1,0 +1,112 @@
+# NPC differentiation ATAC-Me timecourse 
+## TCseq analysis of Replicates 2 and 3
+
+need the below packages installed for the following code:
+
+```{r}
+library(TCseq)
+library(tidyverse)
+library(pheatmap)
+```
+you first need to read in the bed file for the regions of interest, this was generated using Genrich program, the slurm script is in accre
+regions are Genrich for each timepoint then merged using bedtools across all timepoints
+the peakreference function in TCseq stiches together regions in each timepoint that may overlap, largely redundant singe we already merged
+```{r}
+Genrich_bed <- read_tsv("NPCdiffATACme_alltime_genrich.merge.narrowPeak", 
+                        col_names = c("chr", "start", "end", "pval", "qval"),
+                        col_types = "cnncc")
+gf <- peakreference(dir = "/Users/lindsey/Desktop/Hodges_Lab/ATAC-me NPCdiff/NPCDiff_ATACme/TC_seq/", 
+                    pattern = "NPCdiffATACme_alltime_genrich.merge.narrowPeak")
+```
+
+define variables indicating the information for each sample, should use bam files instead of subread featureCounts 
+
+```{r}
+ATACme_samples <- c("rep2_0", "rep3_0", "rep2_6", "rep3_6", "rep2_12", "rep3_12", "rep2_24", "rep3_24", "rep2_72", "rep3_72", "rep2_6day", "rep3_6day")
+ATACme_time<- c("0hr", "0hr", "6hr", "6hr", "12hr", "12hr", "24hr", "24hr", "72hr", "72hr", "6day", "6day")
+rep <- c(2, 3, 2, 3, 2, 3, 2, 3, 2, 3, 2, 3)
+BAMfile <- c("NPCdiffATACme0hr.sorted_rep2.bam","NPCdiffATACme0hr.sorted.bam",
+             "NPCdiffATACme6hr.sorted_rep2.bam","NPCdiffATACme6hr.sorted.bam",
+             "NPCdiffATACme12hr.sorted_rep2.bam","NPCdiffATACme12hr.sorted.bam",
+             "NPCdiffATACme24hr.sorted_rep2.bam", "NPCdiffATACme24hr.sorted.bam",
+             "NPCdiffATACme72hr.sorted_rep2.bam", "NPCdiffATACme72hr.sorted.bam",
+             "NPCdiffATACme6day.sorted_rep2.bam","NPCdiffATACme6day.sorted.bam")
+```
+
+create a data frame containing all the variables defined for the experiment which can then be loaded into the tca object along with the regions of interest file
+```{r}
+experiment <- data.frame(sampleid = ATACme_samples, timepoint = as.factor(ATACme_time), group = as.factor(rep), BAMfile = BAMfile)
+
+tca <- TCA(design = experiment, genomicFeature = gf)
+```
+
+Get count of reads overlapping peak regions of interest through the countReads function, this also normalizes reads
+the directory is the directory containing the bam files, this takes considerable time so the resulting tca object is saved independently of the overall environment
+```{r}
+tca <- countReads(tca, dir = "/Users/lindsey/Desktop/Hodges_Lab/ATAC-me NPCdiff/NPCDiff_ATACme/TC_seq")
+save(tca, tca, file = "/Users/lindsey/Desktop/Hodges_Lab/ATAC-me NPCdiff/NPCDiff_ATACme/tcseq_genrich_count_obj.Rdata")
+```
+We then run analysis for differential events across the time course, TCseq uses GLM based analysis from edgeR
+we also filter  out regions that have low count values
+the timecourseTable command builds table of differential time course events that pass the pvalue threshold of 0.005
+```{r}
+tca <- DBanalysis(tca, categories = "timepoint",
+                      norm.lib = TRUE, 
+                      filter.type = "cpm", 
+                      filter.value = 5, 
+                      samplePassfilter = 2)
+
+
+tca <- timecourseTable(tca, value = "expression", 
+                           norm.method = "rpkm", 
+                           filter = TRUE, 
+                           pvalue = "fdr", 
+                           pvalue.threshold = 0.005, 
+                           direction = "both")
+```
+write a table of differential time course events and save it for future use
+```{r}
+load("/Users/lindsey/Desktop/Hodges_Lab/ATAC-me NPCdiff/NPCDiff_ATACme/tcseq_genrich_count_obj.Rdata")
+NPC_t <- tcTable(tca)
+head(NPC_t)
+write.table(NPC_t, sep="\t", file="/Users/lindsey/Desktop/Hodges_Lab/ATAC-me NPCdiff/NPCDiff_ATACme/TC_seq/TCseq_NPCdiff_ATAC_ExpressionTable.txt")
+```
+# clustering of time course events
+to capture dynamic behavior time course events are clustered into groups that show similar changes in accessibility over the differentiation protocol
+TCseq asks you to choose a cluster number, to inform this decision perform a gap statistic calculation first which can be visualized
+```{r}
+kmax <- 15
+wss_NPC <-sapply(1:kmax,
+                 function(k){kmeans(NPC_t, k,
+                 nstart = 50, iter.max= 15) $tot.withinss})
+```
+```{r echo= FALSE}
+plot(1:kmax, wss_NPC,
+     type="b", pch = 19, frame = FALSE, 
+     xlab="Number of clusters K",
+     ylab="Total within-clusters sum of squares")
+```
+create heatmap to visualize different cluster numbers based off the resulting gap statistic plot 
+```{r}
+set.seed(123)
+NPC_TCseq_4cluster<- pheatmap(as.matrix(NPC_t), 
+                             color = colorRampPalette(rev(brewer.pal(n = 11, name = "RdYlBu")))(100), 
+                             cellwidth = 30, cellheight = 30, 
+                             cluster_cols=FALSE, kmeans_k = 4, 
+                             scale = "row")
+NPC_TCseq_6cluster<- pheatmap(as.matrix(NPC_t), 
+                             color = colorRampPalette(rev(brewer.pal(n = 11, name = "RdYlBu")))(100), 
+                             cellwidth = 30, cellheight = 30, 
+                             cluster_cols=FALSE, kmeans_k = 6, 
+                             scale = "row")
+NPC_TCseq_8cluster<- pheatmap(as.matrix(NPC_t), 
+                             color = colorRampPalette(rev(brewer.pal(n = 11, name = "RdYlBu")))(100), 
+                             cellwidth = 30, cellheight = 30, 
+                             cluster_cols=FALSE, kmeans_k = 8, 
+                             scale = "row")
+```
+Cluster time course data into 6 clusters via fuzzy c-means clustering and plot the different clusters
+```{r}
+tca <- timeclust(tca, algo = "cm", k=6, standardize = TRUE)
+p <- timeclustplot(tca, value = "z-score(PRKM)", cols = 2, membership.color = topo.colors(30), categories = "timepoint")
+```
