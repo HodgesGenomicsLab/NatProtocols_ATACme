@@ -10,6 +10,14 @@
 #SBATCH --mail-type=END
 #SBATCH --job-name="ATACme_trim"
 
+#############################################
+# input variables:
+#   R1: Read-1 file
+#   R2: Read-2 file
+#   TRIM_DIR: trimmed reads directory
+#   FASTQC_DIR: fastqc file directory
+#############################################
+
 # Runs the trim_galore program to trim fastq reads of nextera adapters
 # Also runs fastqc program on the same files for quality checks
 
