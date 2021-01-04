@@ -1,0 +1,14 @@
+#!/bin/bash
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=1
+#SBATCH --time=12:00:00
+#SBATCH --mem=64G
+#SBATCH --job-name="walt index"
+#SBATCH -o walt_index.out # Standard output
+#SBATCH -e walt_index.err # Standard error
+
+#generates an index files to use for walt mapping, hg38
+module load GCCcore/.6.4.0
+
+makedb -c /data/hodges_lab/hg38_genome/ -o hg38.dbindex
