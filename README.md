@@ -24,7 +24,6 @@ methprocess_loop.sh
 ## Peak Calling
 ```
 genrich.slrm
-genrich_loop.sh
 ```
 ## Further Analyses
 ### timecourse accessibility analysis
