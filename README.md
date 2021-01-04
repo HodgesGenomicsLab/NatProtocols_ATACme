@@ -2,7 +2,9 @@
 Scripts for the processing and analysis of ATAC-Me datasets
 
 ## Software
-
+```
+Anaconda3/5.0.1
+```
 ## Trimming
 ```
 trim.slrm
