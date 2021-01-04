@@ -1,0 +1,27 @@
+#!/bin/bash
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --time=8:00:00
+#SBATCH --mem=16G
+#SBATCH --job-name="trimgalore"
+#SBATCH -o trim_%A.out # Standard output
+#SBATCH -e trim_%A.err # Standard error
+#SBATCH --mail-user=lindsey.n.guerin@vanderbilt.edu
+#SBATCH --mail-type=END
+#SBATCH --job-name="ATACme_trim"
+
+# Runs the trim_galore program to trim fastq reads of nextera adapters
+# Also runs fastqc program on the same files for quality checks
+
+module load Anaconda3/5.0.1
+source activate trim_galore
+
+# --clip_R1 9 --clip_R2 9 are added to remove the 9 bases that are genomic but filled in during bisulfite library construction
+# These bases are 100% hypomethylated due to being filled in entirely with dCTPs during construction
+# They are excluded to avoid artifical bias in DNA methylation level calculation, however, these bases are technically valid for mapping purposes
+# A better approach would be to ignore these bases for DNA meth level calcutions in later processing
+
+# unpaired reads are retained in case of any necessary analysis
+# These can be discarded if disk storage space is an issue
+
+trim_galore --fastqc --fastqc_args "--outdir ${FASTQC_DIR}" --clip_R1 9 --clip_R2 9 --paired --retain_unpaired --output_dir ${TRIM_DIR} ${R1} ${R2}
