@@ -1,0 +1,10 @@
+module restore anaconda
+source activate deeptools
+
+computeMatrix scale-regions -S /data/hodges_lab/NPCdiff_ATACme/consensus_peaks/methylation.bw -R peakRegion.bed -b 600 -a 600 -m 450 -bs 75 --sortRegions descend --outFileSortedRegions meth_sorted.bed -o 0hr_meth.mathead
+
+computeMatrix scale-regions -S /data/hodges_lab/NPCdiff_ATACme/consensus_peaks/accessibility.bw -R meth_sorted.bed -b 600 -a 600 -m 450 -o 0hr_ATAC.mathead --missingDataAsZero
+
+plotHeatmap -m 0hr_meth.mathead -o 0hr_meth_nearest.pdf --missingDataColor silver --boxAroundHeatmaps no --colorMap YlGnBu --interpolationMethod nearest --sortRegions keep --heatmapHeight 40 --heatmapWidth 10 --xAxisLabel "DNA Methylation" --startLabel "Region Start" --endLabel "Region End" --regionsLabel "ESC Peaks" --refPointLabel "Region Center"
+
+plotHeatmap -m 0hr_ATAC.mathead -o 0hr_ATAC.pdf --missingDataColor silver --boxAroundHeatmaps no --plotFileFormat pdf --colorMap Purples --heatmapHeight 40 --heatmapWidth 10 --sortRegions keep --xAxisLabel "DNA Accessibility" --startLabel "Region Start" --endLabel "Region End" --regionsLabel "ESC Peaks" --samplesLabel "H9 ESCs" 
