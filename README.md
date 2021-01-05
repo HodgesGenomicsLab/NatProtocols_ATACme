@@ -8,7 +8,7 @@ trim-galore   0.6.5
 cutadapt      1.18 
 fastqc        0.11.9 
 WALT          v1.0
-Deeptools
+deeptools     3.3
 pheatmap  1.0.12 (R version 3.6.0)
 TCseq     1.8.0 (R version 3.6.0)
 tidyverse 1.3.0 (R version 3.6.0)
