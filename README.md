@@ -44,5 +44,5 @@ footprinting_scripts.txt
 ```
 ### heatmap visualization
 ```
-plot_TOBIAS_plots.slrm
+heatmap_matrix_plot.txt
 ```
