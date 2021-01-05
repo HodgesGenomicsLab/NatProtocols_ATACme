@@ -40,8 +40,7 @@ timepoint_roitmeth.slrm
 ```
 ### footprinting
 ```
-tobias_alltime_allmotifs.slrm
-timepoint_roimeth.slrm
+footprinting_scripts.txt
 ```
 ### heatmap visualization
 ```
