@@ -26,9 +26,12 @@ MAPPED=`basename $SAM .sam`
 
 # Loads samtools via LMOD from cluster computing environment
 module load Intel/2017.4.196 GCC/6.4.0-2.28 SAMtools/1.6
-module restore tools
+
 # Convert sam output from walt to bam filetype
 samtools view -Sb  ${SAM}  >  ${PROCESSED_DIR}/${MAPPED}.bam
+
+# Loads MethPipe dependencies via LMOD from cluster computing environment
+module load Intel/2016.3.210 GSL/2.1
 
 # Convert bam output to mapped read format used by methpipe tools
 to-mr -o ${PROCESSED_DIR}/${MAPPED}.mr -m general ${PROCESSED_DIR}/${MAPPED}.bam
