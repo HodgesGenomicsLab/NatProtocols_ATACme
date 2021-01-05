@@ -1,0 +1,117 @@
+######## generate TOBIAS input files ########
+
+GENOME_DIR=/data/hodges_lab/hg38_genome
+PEAK_DIR=/data/hodges_lab/NPCdiff_ATACme/consensus_peaks
+PROCESSED_DIR=/data/hodges_lab/NPCdiff_ATACme/consensus_peaks/TOBIAS
+BAMDIR_rep2=/data/hodges_lab/NPCdiff_ATACme/201004_rep2/fastqs/trimmed_reads/temp/mapped_reads/methprocessed
+BAMDIR_rep3=/data/hodges_lab/NPCdiff_ATACme/201027_rep3/fastqs/trimmed_reads/temp/mapped_reads/methprocessed
+
+if test -d ${PROCESSED_DIR}; then  echo "exist"; else mkdir ${PROCESSED_DIR} && echo created; fi
+
+module restore tools
+
+#need to create merged bam files for replicates of each timepoint, then sort, index if not already done
+for i in 0hr 6hr 12hr 24hr 72hr 6day
+do
+samtools merge -f ${PEAK_DIR}/ATACme_${i}_merged.bam ${BAMDIR_rep2}/NPCdiffATACme${i}val.sorted.bam ${BAMDIR_rep3}/5414-NPCdiff_ATACme_${i}.sorted.bam
+samtools sort -o ${PEAK_DIR}/ATACme_${i}_merged.sorted.bam ${PEAK_DIR}/ATACme_${i}_merged.bam
+
+module restore anaconda
+source activate TOBIAS
+
+#this first command is correcting for the bias of Tn5 cut sites, your output is a directory containing a *corrected.bw file and some others
+#peak bed must contain regions of interest which you would like to perform footprinting on 
+TOBIAS ATACorrect --bam ${PEAK_DIR}/ATACme_${i}_merged.sorted.bam  --genome ${GENOME_DIR}/hg38.fa --peaks ${PEAK_DIR}/regions.bed  \
+    --blacklist ${GENOME_DIR}/hg38.blacklist.bed --outdir ${PROCESSED_DIR}/ATACme_${i} --cores 8
+
+#using the corrected.bw this command creates a score bigWig which is comparable to a cut site bigWig
+#the regions you use here depend on what you chose to footprint later on, subset of the peak regions
+
+TOBIAS ScoreBigwig --signal ${PROCESSED_DIR}/ATACme_${i}/ATACme_${i}_merged.sorted_corrected.bw --regions ${PEAK_DIR}/ROI.bed \
+    --output ${PROCESSED_DIR}/ATACme_${i}_footprints.bw --cores 8
+done
+
+######## identify motifs in regions of interest ########
+
+module restore anaconda
+module restore tools
+source activate TOBIAS
+
+GENOME_DIR=/data/hodges_lab/hg38_genome
+PEAK_DIR=/data/hodges_lab/NPCdiff_ATACme/consensus_peaks
+PROCESSED_DIR=/data/hodges_lab/NPCdiff_ATACme/consensus_peaks/TOBIAS
+
+for i in 0hr 6hr 12hr 24hr 72hr 6day
+do
+
+TOBIAS BINDetect --motifs  ${PROCESSED_DIR}/JASPAR2020_CORE_vertebrates_non-redundant_pfms_jaspar.txt \
+        --signals ${PROCESSED_DIR}/ATACme_${i}_footprints.bw \
+        --genome ${GENOME_DIR}/hg38.fa --peaks ${PEAK_DIR}/TCseq_dynamic_peaks.bed  --outdir ${PROCESSED_DIR}/motifs_${i} \
+        --cond_names ${i} --cores 8
+
+done
+
+######## to visualize need cut site bigWigs ########
+
+WORK_DIR=/data/hodges_lab/NPCdiff_ATACme/consensus_peaks
+
+for i in 0hr 6hr 12hr 24hr 72hr 6day
+do
+
+module restore anaconda
+source activate deeptools
+
+alignmentSieve -b ${WORK_DIR}/ATACme_${i}_merged.sorted.bam  -o ${WORK_DIR}/ATACme_${i}_merged.shift.bam --ATACshift --filterMetrics log_${i}.txt
+
+module restore samtools
+
+samtools sort -@ 8 -o ${WORK_DIR}/ATACme_${i}_merged.sorted.shift.bam ${WORK_DIR}/ATACme_${i}_merged.shift.bam
+samtools index ${WORK_DIR}/ATACme_${i}_merged.sorted.shift.bam
+
+module restore conda
+source activate deeptools
+
+bamCoverage -b ${WORK_DIR}/ATACme_${i}_merged.sorted.shift.bam -o ${WORK_DIR}/ATACme_${i}_merged.CutCount1.bw \
+        --Offset 1 --normalizeUsing CPM --numberOfProcessors max --exactScaling --binSize 1 --outFileFormat bigwig
+bamCoverage -b ${WORK_DIR}/ATACme_${i}_merged.sorted.shift.bam -o ${WORK_DIR}/ATACme_${i}_merged.CutCount-1.bw \
+        --Offset -1 --normalizeUsing CPM --numberOfProcessors 8 --exactScaling --binSize 1 --outFileFormat bigwig
+
+bigWigMerge ${WORK_DIR}/ATACme_${i}_merged.CutCount1.bw ${WORK_DIR}/ATACme_${i}_merged.CutCount-1.bw ${WORK_DIR}/ATACme_${i}_merged.CutCount.bedGraph
+
+LC_COLLATE=C
+sort -k1,1 -k2,2n ${WORK_DIR}/ATACme_${i}_merged.CutCount.bedGraph > ${WORK_DIR}/ATACme_${i}_merged.CutCount.bedGraph.sort
+bedGraphToBigWig ${WORK_DIR}/ATACme_${i}_merged.CutCount.bedGraph.sort /data/hodges_lab/hg38_genome/hg38.chrom.sizes ${WORK_DIR}/ATACme_${i}_merged.CutCount.bw
+
+done
+
+######## to generate footprint heatmaps ########
+
+module restore anaconda
+source activate deeptools
+
+GENOME_DIR=/data/hodges_lab/hg38_genome
+PEAK_DIR=/data/hodges_lab/NPCdiff_ATACme/consensus_peaks/TOBIAS/motifs_0hr
+PROCESSED_DIR=/data/hodges_lab/NPCdiff_ATACme/consensus_peaks/footprint_plots
+
+for i in CTCF_MA0139.1 
+do
+#create a matrix of cut sites across footprint bed regions
+computeMatrix reference-point --regionsFileName ${PEAK_DIR}/${i}/beds/${i}_0hr_bound.bed \
+        --scoreFileName /data/hodges_lab/NPCdiff_ATACme/consensus_peaks/ATACme_0hr_merged.CutCount.bw  \
+        -b 200 -a 200 --referencePoint center --missingDataAsZero\
+        -o ${PROCESSED_DIR}/${i}_TOBIAS_footprint.matrix
+
+# create plots 
+plotHeatmap --matrixFile ${PROCESSED_DIR}/${i}_TOBIAS_footprint.matrix --outFileName ${PROCESSED_DIR}/${i}_TOBIAS_footprint_heatmap.pdf \
+        --heatmapHeight 20 --heatmapWidth 10 --sortRegions descend \
+        --xAxisLabel "${i} Footprint Motif Sites" --startLabel "Region Start" --endLabel "Region End" \
+        --regionsLabel "${i} Motif Footprints" --colorMap GnBu --refPointLabel "Motif Center" --yMin 0 --yMax 0.0125 \
+        --samplesLabel "0 hour" 
+plotProfile --matrixFile ${PROCESSED_DIR}/${i}_TOBIAS_footprint.matrix --outFileName ${PROCESSED_DIR}/${i}_TOBIAS_footprint_profile.pdf \
+        --plotHeight 15 --plotWidth 15 --plotType lines --perGroup \
+        --yAxisLabel "${i} Motif Tn5 Insertion Signal" --startLabel "Region Start" --endLabel "Region End" \
+        --regionsLabel "${i} Motif Footprints" --refPointLabel "Motif Center" \
+        --samplesLabel "0 hour" 
+        
+done
+
