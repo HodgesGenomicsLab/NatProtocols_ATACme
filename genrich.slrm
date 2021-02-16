@@ -2,60 +2,42 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=1
-#SBATCH --time=10:00:00
-#SBATCH --mem=64G
+#SBATCH --time=1:00:00
+#SBATCH --mem=32G
 #SBATCH --output=genrich_%A.out
 #SBATCH --error=genrich_%A.error
 #SBATCH --mail-user=lindsey.n.guerin@vanderbilt.edu
 #SBATCH --mail-type=END
 #SBATCH --job-name="genrich"
 
+OUT=/data/hodges_lab/NPCdiff_ATACme/Nat_Protocols
 
-BAMDIR_rep3=/data/hodges_lab/NPCdiff_ATACme/201027_rep3/fastqs/trimmed_reads/temp/mapped_reads/methprocessed
-BAMDIR_rep2=/data/hodges_lab/NPCdiff_ATACme/201004_rep2/fastqs/trimmed_reads/temp/mapped_reads/methprocessed
-PROCESSED_DIR=/data/hodges_lab/NPCdiff_ATACme/201027_rep3/fastqs/trimmed_reads/temp/mapped_reads/Genrich
+module restore tools
 
-#input mapped read files need to be sorted prior to peak calling with Genrich 
+for i in Rep1 Rep2 Rep3
+do
+module restore samtools
+#samtools sort -n ${OUT}/${i}_0hr_filtered.bam > ${OUT}/${i}_0hr_filtered.n-sorted.bam
 
-echo "timepoint 0hr"
-Genrich -t ${BAMDIR_rep3}/NPCdiffATACme0hrval.nsorted.sam,${BAMDIR_rep2}/NPCdiffATACme0hrval.nsorted.sam \
-        -o ${PROCESSED_DIR}/NPCdiffATACme0hr_genrich.narrowPeak -f ${PROCESSED_DIR}/NPCdiffATACme0hr_genrich.pqvalues.bed \
-        -k ${PROCESSED_DIR}/NPCdiffATACme0hr_genrich.pval.pileups -r -e chrX,chrY,chrM -E /data/hodges_lab/hg38_genome/hg38.blacklist.bed \
-        -j -p 0.005 -q 0.01 -v
-echo "timepoint 0hr complete"
+echo "${i}"
+Genrich -t ${OUT}/${i}_0hr_filtered.n-sorted.bam \
+        -o ${OUT}/${i}_0hr_filtered_0.1.narrowPeak -f ${OUT}/${i}_0hr_filtered_0.1.pqvalues.bed \
+        -k ${OUT}/${i}_0hr_filtered_0.1.pval.pileups -r -e chrX,chrY,chrM -E /data/hodges_lab/hg38_genome/hg38.blacklist.bed \
+        -j -p 0.1 -v
+echo "${i} complete 0.1"
 
-echo "timepoint 6hr"
-Genrich -t ${BAMDIR_rep3}/NPCdiffATACme6hrval.nsorted.sam,${BAMDIR_rep2}/NPCdiffATACme6hrval.nsorted.sam \
-        -o ${PROCESSED_DIR}/NPCdiffATACme6hr_genrich.narrowPeak -f ${PROCESSED_DIR}/NPCdiffATACme6hr_genrich.pqvalues.bed \
-        -k ${PROCESSED_DIR}/NPCdiffATACme6hr_genrich.pval.pileups -r -e chrX,chrY,chrM -E /data/hodges_lab/hg38_genome/hg38.blacklist.bed \
-        -j -p 0.005 -q 0.01 -v
-echo "timepoint 6hr complete"
+echo "${i}"
+Genrich -t ${OUT}/${i}_0hr_filtered.n-sorted.bam \
+        -o ${OUT}/${i}_0hr_filtered_0.05.narrowPeak -f ${OUT}/${i}_0hr_filtered_0.05.pqvalues.bed \
+        -k ${OUT}/${i}_0hr_filtered_0.05.pval.pileups -r -e chrX,chrY,chrM -E /data/hodges_lab/hg38_genome/hg38.blacklist.bed \
+        -j -p 0.05 -v
+echo "${i} complete 0.05"
 
+echo "${i}"
+Genrich -t ${OUT}/${i}_0hr_filtered.n-sorted.bam \
+        -o ${OUT}/${i}_0hr_filtered_0.005.narrowPeak -f ${OUT}/${i}_0hr_filtered_0.005.pqvalues.bed \
+        -k ${OUT}/${i}_0hr_filtered_0.005.pval.pileups -r -e chrX,chrY,chrM -E /data/hodges_lab/hg38_genome/hg38.blacklist.bed \
+        -j -p 0.005 -v
+echo "${i} complete 0.005"
+done
 
-echo "timepoint 12hr"
-Genrich -t ${BAMDIR_rep3}/NPCdiffATACme12hrval.nsorted.sam,${BAMDIR_rep2}/NPCdiffATACme12hrval.nsorted.sam \
-        -o ${PROCESSED_DIR}/NPCdiffATACme12hr_genrich.narrowPeak -f ${PROCESSED_DIR}/NPCdiffATACme12hr_genrich.pqvalues.bed \
-        -k ${PROCESSED_DIR}/NPCdiffATACme12hr_genrich.pval.pileups -r -e chrX,chrY,chrM -E /data/hodges_lab/hg38_genome/hg38.blacklist.bed \
-        -j -p 0.005 -q 0.01 -v
-echo "timepoint 12hr complete"
-
-echo "timepoint 24hr"
-Genrich -t ${BAMDIR_rep3}/NPCdiffATACme24hrval.nsorted.sam,${BAMDIR_rep2}/NPCdiffATACme24hrval.nsorted.sam \
-        -o ${PROCESSED_DIR}/NPCdiffATACme24hr_genrich.narrowPeak -f ${PROCESSED_DIR}/NPCdiffATACme24hr_genrich.pqvalues.bed \
-        -k ${PROCESSED_DIR}/NPCdiffATACme24hr_genrich.pval.pileups -r -e chrX,chrY,chrM -E /data/hodges_lab/hg38_genome/hg38.blacklist.bed \
-        -j -p 0.005 -q 0.01 -v
-echo "timepoint 24hr complete"
-
-echo "timepoint 72hr"
-Genrich -t ${BAMDIR_rep3}/NPCdiffATACme72hrval.nsorted.sam,${BAMDIR_rep2}/NPCdiffATACme72hrval.nsorted.sam \
-        -o ${PROCESSED_DIR}/NPCdiffATACme72hr_genrich.narrowPeak -f ${PROCESSED_DIR}/NPCdiffATACme72hr_genrich.pqvalues.bed \
-        -k ${PROCESSED_DIR}/NPCdiffATACme72hr_genrich.pval.pileups -r -e chrX,chrY,chrM -E /data/hodges_lab/hg38_genome/hg38.blacklist.bed \
-        -j -p 0.005 -q 0.01 -v
-echo "timepoint 72hr complete"
-
-echo "timepoint 6day"
-Genrich -t ${BAMDIR_rep3}/NPCdiffATACme6dayval.nsorted.sam,${BAMDIR_rep2}/NPCdiffATACme6dayval.nsorted.sam \
-        -o ${PROCESSED_DIR}/NPCdiffATACme6day_genrich.narrowPeak -f ${PROCESSED_DIR}/NPCdiffATACme6day_genrich.pqvalues.bed \
-        -k ${PROCESSED_DIR}/NPCdiffATACme6day_genrich.pval.pileups -r -e chrX,chrY,chrM -E /data/hodges_lab/hg38_genome/hg38.blacklist.bed \
-        -j -p 0.005 -q 0.01 -v
-echo "timepoint 6day complete"
