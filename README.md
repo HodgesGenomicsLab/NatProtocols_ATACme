@@ -1,6 +1,6 @@
 # NatProtocols_ATACme
 ATAC-Me is a joint profiling method capable of capturing chromatin accessibility and DNA methylation data from a single fragment library in a sequence independent manner. Processing of the resulting data is based on initial steps shared with many next generation sequencing pipelines followed by parallel analyses for accessibility and methylation data. The outline of our pipeline is shown below. 
-
+![alt text](https://de.cyverse.org/dl/d/A10C6D0A-B486-4B51-A9D1-4E7CE32300CB/Figure4.png)
 ## Software
 Analyses of ATAC-Me is designed to take advantage of publicly available softwares, listed here: 
 ```
@@ -63,7 +63,7 @@ A unique feature of ATAC methods is the ability to predict transcription factor 
 footprinting_scripts.txt
 ```
 ### heatmap visualization
-The following script utilizes deeptools methods of visualization to display heatmaps for accessibility, DNA methylation, and footprinting. All the heatmaps displayed in Figure 4 of the manuscript are generated using this method. 
+The following script utilizes deeptools methods of visualization to display heatmaps for accessibility, DNA methylation, and footprinting. All the heatmaps displayed in Figure 5 of the manuscript are generated using this method. 
 ```
 heatmap_matrix_plot.txt
 ```
