@@ -65,7 +65,10 @@ A unique feature of ATAC methods is the ability to predict transcription factor 
 footprinting_scripts.txt
 ```
 ### heatmap visualization
-The following script utilizes deeptools methods of visualization to display heatmaps for accessibility, DNA methylation, and footprinting. All the heatmaps displayed in Figure 5 of the manuscript are generated using this method. 
+The following script utilizes deeptools methods of visualization to display heatmaps for accessibility, DNA methylation, and footprinting. The heatmaps below are generated using this method. 
+
+<img src="https://user-images.githubusercontent.com/75271993/114914767-59d46f80-9de8-11eb-8052-f2cf17fdf6d2.png" height="500" width="225px"><img src="https://user-images.githubusercontent.com/75271993/114914771-5b9e3300-9de8-11eb-8ba2-8090b9833719.png" height="500" width="225px">
+
 ```
 heatmap_matrix_plot.txt
 ```
