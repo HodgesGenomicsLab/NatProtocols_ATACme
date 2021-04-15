@@ -60,7 +60,7 @@ Accessibility peaks generate boundaries that can used to delineate regions of in
 timepoint_roimeth.slrm
 ```
 ### footprinting
-A unique feature of ATAC methods is the ability to predict transcription factor (TF) binding through footprinting. Footprinting relies on the assumption that Tn5 incorporated adaptors into accessible regions. Thus, where TFs are bound, and the underlying sequence is protected, fragments will be depleted relative to their otherrwise accessibly surroundings. The feasibility of TF footprinting is dependent on the sequencing depth and library complexity captured and these features should be assessed prior to footprinting analyses. Generally, with minimal troubleshooting of the ATAC-Me protocol-- and requesting around 75 million reads for human samples-- we have been able to generate the high coverage, high complexity libraries that enable footprinting.
+A unique feature of ATAC methods is the ability to predict transcription factor (TF) binding through footprinting. Footprinting relies on the assumption that Tn5 incorporates adaptors into accessible regions. Thus, where TFs are bound, and the underlying sequence is protected, fragments will be depleted relative to their otherwise accessible surroundings. The feasibility of TF footprinting is dependent on the sequencing depth and library complexity captured and these features should be assessed prior to footprinting analyses. Generally, with minimal troubleshooting of the ATAC-Me protocol-- and requesting around 75 million reads for human samples-- we have been able to generate the high coverage, high complexity libraries that enable footprinting.
 ```
 footprinting_scripts.txt
 ```
