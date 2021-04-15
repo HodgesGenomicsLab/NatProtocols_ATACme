@@ -19,7 +19,7 @@ picard        2.18.27
 preseq        2.0.0
 ```
 ## Trimming
-As is the case with other sequencing methods, adaptor sequences need to be trimmed from output reads. The ATAC-Me protocol relies on a Nextera based adaptor system. In our pipeline we utilize trim-galore, a wrapper for cutadapt and fastqc, which searches for known adaptor sequences, including Nextera, and removes them from reads. 
+As is the case with other sequencing methods, adapter sequences need to be trimmed from output reads. The ATAC-Me protocol relies on a Nextera based adapter system. In our pipeline we utilize trim-galore, a wrapper for cutadapt and fastqc, which searches for known adapter sequences, including Nextera, and removes them from reads. 
 ```
 trim.slrm
 trimming_loop.sh
@@ -37,7 +37,7 @@ At this step, we separate our analyses for accessibility and DNA methylation. Me
 methprocess.slrm
 methprocess_loop.sh
 ```
-## Peak Calling
+## Accessibility Peak Calling
 As is the case with other ATAC based methods, we identify accumulation of reads, and thus accessible regions, using peak calling methods. There are a variety of peak calling softwares available for this type of analysis. The ENCODE project recommends using MACS2 for calling peaks on individual replicates prior to generating a consensus peak list through setting IDR thresholds. An alternative is to use Genrich, as recommended by  Harvard FAS Informatics. Genrich incorporates all replicates initially into its peak calling algorithm. We prefer to use Genrich as it includes an ATAC read shift correction and its handling of biological replicates is more streamlined. However, different methods may be appropriate depending on your individual study. 
 ```
 genrich.slrm
