@@ -38,19 +38,19 @@ methprocess.slrm
 methprocess_loop.sh
 ```
 ## Peak Calling
-As is the case with other ATAC based methods, we identifying accumulation of reads, and thus accessible regions, using peak calling methods. There are a variety of peak calling softwares available for this type of analysis. The ENCODE project recommends using MACS2 for calling peaks on individual replicates prior to generating a consensus peak list through setting IDR thresholds. An alternative is to use Genrich, as recommended by  Harvard FAS Informatics. Genrich incorporates all replicates initially into its peak calling algorithm. We prefer to use Genrich as it includes an ATAC read shift correction and its handling of biological replicates is more streamlined. However, different methods may be more appropriate depending on your individual study. 
+As is the case with other ATAC based methods, we identify accumulation of reads, and thus accessible regions, using peak calling methods. There are a variety of peak calling softwares available for this type of analysis. The ENCODE project recommends using MACS2 for calling peaks on individual replicates prior to generating a consensus peak list through setting IDR thresholds. An alternative is to use Genrich, as recommended by  Harvard FAS Informatics. Genrich incorporates all replicates initially into its peak calling algorithm. We prefer to use Genrich as it includes an ATAC read shift correction and its handling of biological replicates is more streamlined. However, different methods may be appropriate depending on your individual study. 
 ```
 genrich.slrm
 ```
 ## Further Analyses
-A distinct benefit of joint profiling methods such as ATAC-Me is the data results from one fragment library and thus a single cell population. This allows us to relate accessibility and methylation spatially with high confidence. Initially, we evaluate library quality by looking at CpG coverage, peak calls, library complexity, and FRiP scores. Following the individual processing of accessibility and methylation data, we have integrated these date types in a variety of ways.
+A distinct benefit of joint profiling methods, such as ATAC-Me, is the data is derived from one fragment library and thus a single cell population. This allows us to relate accessibility and methylation spatially with high confidence. Initially, we evaluate library quality by looking at CpG coverage, peak number, library complexity, and FRiP scores. Following the individual processing of accessibility and methylation data, we have integrated these date types in a variety of ways.
 ### library quality
 ```
 complexity.slrm
 FRiP_scores.slrm
 ```
 ### timecourse accessibility analysis
-One avenue of analysis we have persued is evaluating how these epigenetic features change over cell fate changes. In Barnett et al, 2019. ATAC-Me was applied through a THP1 differentiation. If these sorts of analyses are of interest to your group, it may be helpful to identify temporal accessibility behavior. We have applied the R package TCSeq to do this. 
+One avenue of analysis we have persued is evaluating how these epigenetic features change over cell fate transitions. In Barnett et al, 2019. ATAC-Me was applied through a THP1 differentiation. If these sorts of analyses are of interest to your group, it may be helpful to identify temporal accessibility behavior. We have applied the R package TCSeq to do this. 
 ```
 TCseq_analysis.Rmd
 ```
@@ -65,7 +65,7 @@ A unique feature of ATAC methods is the ability to predict transcription factor 
 footprinting_scripts.txt
 ```
 ### heatmap visualization
-The following script utilizes deeptools methods of visualization to display heatmaps for accessibility, DNA methylation, and footprinting. The heatmaps below are generated using this method. 
+The following script utilizes deeptools methods of visualization to display heatmaps for accessibility and DNA methylation. The heatmaps below are generated using this method. 
 
 <img src="https://user-images.githubusercontent.com/75271993/114914767-59d46f80-9de8-11eb-8052-f2cf17fdf6d2.png" height="500" width="225px"><img src="https://user-images.githubusercontent.com/75271993/114914771-5b9e3300-9de8-11eb-8ba2-8090b9833719.png" height="500" width="225px">
 
