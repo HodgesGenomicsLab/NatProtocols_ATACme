@@ -1,6 +1,6 @@
 # NatProtocols_ATACme
 ATAC-Me is a joint profiling method capable of capturing chromatin accessibility and DNA methylation data from a single fragment library in a sequence independent manner. Processing of the resulting data is based on initial steps shared with many next generation sequencing pipelines followed by parallel analyses for accessibility and methylation data. The outline of our pipeline is shown below. 
-![alt text](/home/guerinln/Figure4.png)
+![alt text](~/Dropbox (VU Basic Sciences)/Hodges Lab/Nat_Protocols_ATACme/revisions/Figure4.png)
 ## Software
 Analyses of ATAC-Me is designed to take advantage of publicly available softwares, listed here: 
 ```
