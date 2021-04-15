@@ -1,0 +1,53 @@
+#!/bin/bash
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=1
+#SBATCH --time=2:00:00
+#SBATCH --mem=16G
+#SBATCH --output=frip_%A.out
+#SBATCH --error=frip_%A.error
+#SBATCH --mail-user=lindsey.n.guerin@vanderbilt.edu
+#SBATCH --mail-type=END
+#SBATCH --job-name="frip_scores"
+#######################################################
+# Tyler Hansen - 2021-02-08 #
+# This script will calculate the FRiP score for an ATAC-seq dataset.
+# The output are counts for reads in peaks and total reads for each sample. FRiP score is ("reads in peaks"/"total reads").
+#######################################################
+module restore tools
+
+cd /data/hodges_lab/NPCdiff_ATACme/Nat_Protocols
+#replicate 1
+
+BAM='/data/hodges_lab/NPCdiff_ATACme/Nat_Protocols/Rep1_0hr_filtered.bam'
+PEAK='/data/hodges_lab/NPCdiff_ATACme/Nat_Protocols/Rep1_0hr_filtered_0.005.narrowPeak '
+OUT_FILE='/data/hodges_lab/NPCdiff_ATACme/Nat_Protocols/Rep1_FRiP_scores.txt'
+echo "Rep 1 ATAC-Me" > $OUT_FILE
+echo "Reads in Peaks" >> $OUT_FILE
+samtools view -L $PEAK $BAM | wc -l >> $OUT_FILE
+echo "Total Reads" >> $OUT_FILE
+samtools view $BAM | wc -l >> $OUT_FILE
+
+#replicate 2
+
+BAM='/data/hodges_lab/NPCdiff_ATACme/Nat_Protocols/Rep2_0hr_filtered.bam'
+PEAK='/data/hodges_lab/NPCdiff_ATACme/Nat_Protocols/Rep2_0hr_filtered_0.005.narrowPeak'
+OUT_FILE='/data/hodges_lab/NPCdiff_ATACme/Nat_Protocols/Rep2_FRiP_scores.txt'
+echo "Rep 2 ATAC-Me" > $OUT_FILE
+echo "Reads in Peaks" >> $OUT_FILE
+samtools view -L $PEAK $BAM | wc -l >> $OUT_FILE
+echo "Total Reads" >> $OUT_FILE
+samtools view $BAM | wc -l >> $OUT_FILE
+
+#merged
+
+BAM='/data/hodges_lab/NPCdiff_ATACme/Nat_Protocols/merged2_3_0hr_filtered.bam'
+PEAK='/data/hodges_lab/NPCdiff_ATACme/Nat_Protocols/merged2_3_0hr_filtered_0.005.narrowPeak '
+OUT_FILE='/data/hodges_lab/NPCdiff_ATACme/Nat_Protocols/merge_Rep3Rep2_FRiP_scores.txt'
+echo "Rep 3 ATAC-Meq" > $OUT_FILE
+echo "Reads in Peaks" >> $OUT_FILE
+samtools view -L $PEAK $BAM | wc -l >> $OUT_FILE
+echo "Total Reads" >> $OUT_FILE
+samtools view $BAM | wc -l >> $OUT_FILE
+
+
