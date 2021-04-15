@@ -23,18 +23,20 @@ trim.slrm
 trimming_loop.sh
 ```
 ## Mapping
-Aligning reads to a reference genome is the subsequent step in sequencing analyses. As fragments generated in ATAC-Me undergo bisulfite conversion, we use the MethPipe alignment tool WALT. 
+Aligning reads to a reference genome is the subsequent step in sequencing analyses. As fragments generated in ATAC-Me undergo bisulfite conversion, we use the MethPipe alignment tool WALT. Alignment tools for converted libraries need to be able to account for discrepancies resulting from cytosine deamination.
 ```
 walt_index.slrm
 walt.slrm
 walt_loop.sh
 ```
 ## Methylation Analysis
+At this step, we separate our analyses for accessibility and DNA methylation. Methylation analysis is continued using the MethPipe package. The output of these steps is a .meth file which contains data for each CpG captured by the library and its methylation level. 
 ```
 methprocess.slrm
 methprocess_loop.sh
 ```
 ## Peak Calling
+As is the case with other ATAC based methods, we identifying accumulation of reads, and thus accessible regions, using peak calling methods. There are a variety of peak calling softwares available for this type of analysis. The ENCODE project recommends using MACS2 for calling peaks on individual replicates prior to generating a consensus peak list through setting IDR thresholds. An alternative is to use Genrich, as recommended by  Harvard FAS Informatics. Genrich incorporated all replicates initially into its peak calling algorithm. We have typically prefer to use Genrich as it included an ATAC correction and its handling of biological replicates is more streamlined. However, different methods may be more appropriate depending on your individual study. 
 ```
 genrich.slrm
 ```
