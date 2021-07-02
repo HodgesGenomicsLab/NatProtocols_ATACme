@@ -1,3 +1,4 @@
+[![DOI](https://zenodo.org/badge/326819923.svg)](https://zenodo.org/badge/latestdoi/326819923) 
 # NatProtocols_ATACme
 ATAC-Me is a joint profiling method capable of capturing chromatin accessibility and DNA methylation data from a single fragment library in a sequence independent manner. Processing of the resulting data is based on initial steps shared with many next generation sequencing pipelines followed by parallel analyses for accessibility and methylation data. The outline of our pipeline is shown below. 
 
@@ -72,4 +73,4 @@ The following script utilizes deeptools methods of visualization to display heat
 ```
 heatmap_matrix_plot.txt
 ```
-[![DOI](https://zenodo.org/badge/326819923.svg)](https://zenodo.org/badge/latestdoi/326819923)
+
