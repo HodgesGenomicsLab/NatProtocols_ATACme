@@ -72,3 +72,4 @@ The following script utilizes deeptools methods of visualization to display heat
 ```
 heatmap_matrix_plot.txt
 ```
+[![DOI](https://zenodo.org/badge/326819923.svg)](https://zenodo.org/badge/latestdoi/326819923)
