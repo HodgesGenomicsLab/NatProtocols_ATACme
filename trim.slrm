@@ -6,7 +6,7 @@
 #SBATCH --job-name="trimgalore"
 #SBATCH -o trim_%A.out # Standard output
 #SBATCH -e trim_%A.err # Standard error
-#SBATCH --mail-user=lindsey.n.guerin@vanderbilt.edu
+#SBATCH --mail-user= YOUR EMAIL
 #SBATCH --mail-type=END
 #SBATCH --job-name="ATACme_trim"
 
