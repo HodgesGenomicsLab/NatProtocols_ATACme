@@ -6,7 +6,7 @@
 #SBATCH --mem=16G
 #SBATCH --output=frip_%A.out
 #SBATCH --error=frip_%A.error
-#SBATCH --mail-user=lindsey.n.guerin@vanderbilt.edu
+#SBATCH --mail-user= YOUR EMAIL
 #SBATCH --mail-type=END
 #SBATCH --job-name="frip_scores"
 #######################################################
