@@ -5,7 +5,7 @@
 #SBATCH --mem=16G
 #SBATCH --output=MethPipe_%A.out
 #SBATCH --error=MethPipe_%A.error
-#SBATCH --mail-user=lindsey.n.guerin@vanderbilt.edu
+#SBATCH --mail-user= YOUR EMAIL
 #SBATCH --mail-type=END
 #SBATCH --job-name="MethPipe"
 
